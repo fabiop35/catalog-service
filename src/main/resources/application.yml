@@ -1,1 +1,20 @@
-spring.application.name=catalog-service
+spring:
+  application:
+          name:catalog-service
+          
+  devtools:
+    restart:
+        trigger-file: .reloadTrigger
+        poll-interval: 400ms
+        quiet-period: 1ms
+
+server:
+    port: 9001
+    tomcat: 
+        connection-timeout: 2s
+        keep-alive-timeout: 15s
+        threads:
+            max: 50
+            min-spare: 5
+            
+
