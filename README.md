@@ -3,6 +3,27 @@
 #create project:
 curl https://start.spring.io/starter.zip -d groupId=com.cnsia.polarbookshop -d artifactId=catalog-service -d name=catalog-service -d packageName=com.cnsia.polarbookshop.catalogservice -d dependencies=web -d javaVersion=21 -d bootVersion=3.4.1 -d type=gradle-project -o catalog-service.zip
 
+## REST API
+|:---------------:|:--------:|:----------:|:------:|:--------------:|:------------------------------------------|
+| Endpoint	  | Method   | Req. body  | Status | Resp. body     | Description                               |
+|:---------------:|:--------:|:----------:|:------:|:--------------:|:------------------------------------------|
+| `/books`        | `GET`    |            | 200    | Book[]         | Get all the books in the catalog.         |
+|_________________|__________|____________|________|________________|___________________________________________|
+| `/books`        | `POST`   | Book       | 201    | Book           | Add a new book to the catalog.            |
+|_________________|__________|____________|________|________________|___________________________________________|
+|                 |          |            | 422    |                | A book with the same ISBN already exists. |
+|_________________|__________|____________|________|________________|___________________________________________|
+| `/books/{isbn}` | `GET`    |            | 200    | Book           | Get the book with the given ISBN.         |
+|_________________|__________|____________|________|________________|___________________________________________|
+|                 |          |            | 404    |                | No book with the given ISBN exists.       |
+|_________________|__________|____________|________|________________|___________________________________________|
+| `/books/{isbn}` | `PUT`    | Book       | 200    | Book           | Update the book with the given ISBN.      |
+|_________________|__________|____________|________|________________|___________________________________________|
+|                 |          |            | 200    | Book           | Create a book with the given ISBN.        |
+|_________________|__________|____________|________|________________|___________________________________________|
+| `/books/{isbn}` | `DELETE` |            | 204    |                | Delete the book with the given ISBN.      |
+|:---------------:|:--------:|:----------:|:------:|:--------------:|:------------------------------------------|
+
 #start a local Kubernetes cluster: 
 minikube start
 
@@ -61,6 +82,9 @@ curl -X POST http://localhost:9001/books -d '{"author": "Lyra Silverstart", "tit
 #request to fetch the book with the ISBN code: 
  http :9001/books/1234567891
 
+#request to get all books
+http :9001/books
+
 #run tests: 
 ./gradlew test
 
@@ -81,7 +105,31 @@ http :9001/
 http POST :9001/actuator/refresh
 
 #running PostgreSQL as a container
-docker run -d --name polar-postgres -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=polardb_catalog -p 5432:5432 postgres:14.4
+docker run -d --name polar-postgres -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=polardb_catalog -p 5432:5432 postgres:16.6
+
+#stop, start, and remove the container
+docker stop polar-postgres
+docker start polar-postgres
+docker rm -fv polar-postgres
+
+#Start an interactive PSQL console:
+docker exec -it polar-postgres psql -U user -d polardb_catalog
+
+#List all databases
+\list
+
+#connect to polar database
+\connect polardb_catalog
+
+#list all tables
+\dt
+
+#show the table schema
+\d book
+
+#Test with Testcontainers
+./gradlew test --tests BookRepositoryJdbcTests
+./gradlew test --tests CatalogServiceApplicationTests
 
 
 

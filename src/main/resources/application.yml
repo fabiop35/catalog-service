@@ -6,6 +6,13 @@ spring:
           name: catalog-service
   #profiles:
      #active: testdata
+  datasource:
+    username: user
+    password: password
+    url: jdbc:postgresql://localhost:5432/polardb_catalog
+    hikari:
+      connection-timeout: 2000
+      maximum-pool-size: 5  
   config:
     import: "optional:configserver:"
   cloud:
@@ -24,6 +31,9 @@ spring:
         trigger-file: .reloadTrigger
         poll-interval: 400ms
         quiet-period: 1ms
+  #sql:
+    #init:
+      #mode: always
 
 management:
   endpoints:
