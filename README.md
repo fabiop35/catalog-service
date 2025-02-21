@@ -72,8 +72,9 @@ minikube stop
 #Package the application as a container using Buildpack
 ./gradlew bootBuildImage
 
-#run the image
+#run the image / run the image connecting to the catalog-network, set the datasource URL, and set the param profile to load test data.
 docker run --rm --name catalog-service -p 9001:9001 catalog-service:0.0.1-SNAPSHOT
+docker run -d --name catalog-service --net catalog-network -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:postgresql://polar-postgres:5432/polardb_catalog -e SPRING_PROFILES_ACTIVE=testdata catalog-service
 
 #add a book to the catalog: 
 http POST :9001/books author="Lyra Silverstar" title="Northern Lights" isbn="1234567891" price=9.90
@@ -104,8 +105,9 @@ http :9001/
 #trigger a RefreshScopeRefreshedEvent event
 http POST :9001/actuator/refresh
 
-#running PostgreSQL as a container
+#running PostgreSQL as a container / start a PSQL container specifiying the catalog-network 
 docker run -d --name polar-postgres -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=polardb_catalog -p 5432:5432 postgres:16.6
+docker run -d --name polar-postgres --net catalog-network -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=polardb_catalog -p 5432:5432 postgres:16.6
 
 #stop, start, and remove the container
 docker stop polar-postgres
@@ -131,5 +133,10 @@ docker exec -it polar-postgres psql -U user -d polardb_catalog
 ./gradlew test --tests BookRepositoryJdbcTests
 ./gradlew test --tests CatalogServiceApplicationTests
 
+
+#Containerizing Spring Boot with Dockerfiles
+1. Create  file called Dockerfile in the root folder
+2. ./gradlew clean bootJar #build the JAR artifact
+3. docker build -t catalog-service . #build the continer image
 
 
