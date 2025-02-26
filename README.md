@@ -105,6 +105,9 @@ http :9001/
 #trigger a RefreshScopeRefreshedEvent event
 http POST :9001/actuator/refresh
 
+#Create Docker DNS Server
+docker network create catalog-network
+
 #running PostgreSQL as a container / start a PSQL container specifiying the catalog-network 
 docker run -d --name polar-postgres -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=polardb_catalog -p 5432:5432 postgres:16.6
 docker run -d --name polar-postgres --net catalog-network -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=polardb_catalog -p 5432:5432 postgres:16.6
@@ -138,5 +141,12 @@ docker exec -it polar-postgres psql -U user -d polardb_catalog
 1. Create  file called Dockerfile in the root folder
 2. ./gradlew clean bootJar #build the JAR artifact
 3. docker build -t catalog-service . #build the continer image
+
+#GitHub container registry
+docker login ghcr.io (PAT)
+
+#check if the newly created image contains any vulnerability
+grype catalog-service
+
 
 
