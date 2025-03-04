@@ -69,7 +69,7 @@ minikube stop
 #compiles the code and packages the application as a JAR file: 
 ./gradlew bootJar
 
-#Package the application as a container using Buildpack
+#Package the application as a container using Buildpack (build the image)
 ./gradlew bootBuildImage
 
 #run the image / run the image connecting to the catalog-network, set the datasource URL, and set the param profile to load test data.
@@ -143,10 +143,15 @@ docker exec -it polar-postgres psql -U user -d polardb_catalog
 3. docker build -t catalog-service . #build the continer image
 
 #GitHub container registry
-docker login ghcr.io (PAT)
+docker login ghcr.io (PAT - Settings > Developer Settings > Personal access tokens)
 
 #check if the newly created image contains any vulnerability
 grype catalog-service
 
+#delete Docker resources
+docker rm -f catalog-service polar-postgres
+docker network rm catalog-network
 
+#build and publish the image
+./gradlew bootBuildImage --imageName ghcr.io/fabiop35/catalog-service --publishImage -PregistryUrl=ghcr.io -PregistryUsername=fabiop35 -PregistryToken=<github_token>
 

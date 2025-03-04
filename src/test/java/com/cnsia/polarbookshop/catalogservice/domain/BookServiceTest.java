@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
@@ -38,5 +39,16 @@ class BookServiceTest {
                 .isInstanceOf(BookNotFoundException.class)
                 .hasMessage("The book with ISBN " + bookIsbn + " was not found.");
     }
+	
+    //@Test
+    void whenBookEditDetailsUpdatedOK() {
+        var bookIsbn = "1234561232";
+        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 9.90, "Polarsophia");
+        bookService.addBookToCatalog(bookToCreate);
+        var bookToUpdate = Book.of(bookIsbn, "TitleMod", "AuthorMod", 19.90, "PolarsophiaMod");
+        bookService.editBookDetails(bookIsbn, bookToUpdate);
 
+        assertThat(bookService.viewBookDetails(bookIsbn).author()).matches(bookToUpdate.author());
+
+    }
 }
