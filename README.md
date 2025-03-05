@@ -155,3 +155,12 @@ docker network rm catalog-network
 #build and publish the image
 ./gradlew bootBuildImage --imageName ghcr.io/fabiop35/catalog-service --publishImage -PregistryUrl=ghcr.io -PregistryUsername=fabiop35 -PregistryToken=<github_token>
 
+#start the containers in detached mode
+docker compose up -d
+
+#stop and remove both containers
+docker compose down
+
+
+
+
