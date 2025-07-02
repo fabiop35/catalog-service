@@ -161,6 +161,38 @@ docker compose up -d
 #stop and remove both containers
 docker compose down
 
+#CH07
 
+#create a new Kubernetes cluster named polar on top of Docker
+> minikube start --cpus 2 --memory 4g --driver docker --profile polar
+> minikube start --profile polar
+> minikube stop --profile polar
+> kubectl get nodes
+> kubectl apply -f services
+$ kubectl delete -f services
+> kubectl get pod
+> kubectl logs deployment/polar-postgres
+> minikube image load catalog-service --profile polar
+> kubectl apply -f k8s/deployment.yml
+$ kubectl delete -f k8s/deployment.yml
+$ kubectl get all -l app=catalog-service
+$ kubectl logs deployment/catalog-service
+$ kubectl describe pod catalog-service
+$ kubectl get svc -l app=catalog-service
+$ kubectl -n default delete deploy catalog-service
+$ kubectl get namespaces
+$ kubectl delete svc catalog-service
+$ kubectl delete pod <pod-name>
 
+#cd catalog-service
+> mkdir k8s
+> touch deployment.yml
 
+$ kubectl port-forward service/catalog-service 9001:80
+$ netstat -an | grep LISTEN
+ #tcp6       0      0 ::1:9001                :::*                    LISTEN
+$ http :9001/books
+$ cd catalog-service
+$ touch Tiltfile
+$ tilt up --host 0.0.0.0
+  > Tilt started on http://localhost:10350/
